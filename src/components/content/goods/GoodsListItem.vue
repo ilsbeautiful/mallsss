@@ -1,10 +1,10 @@
 <template>
-  <div class="goods-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-item" @click="itemClick">
+    <img :src="gooditem.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
-      <p>{{goodsItem.title}}</p>
-      <span class="price">{{goodsItem.price}}</span>
-      <span class="collect">{{goodsItem.cfav}}</span>
+      <p>{{gooditem.title}}</p>
+      <span class="price">{{gooditem.price}}</span>
+      <span class="collect">{{gooditem.cfav}}</span>
     </div>
   </div>
 </template>
@@ -13,11 +13,19 @@
   export default {
     name: "GoodsListItem",
     props: {
-      goodsItem: {
+      gooditem: {
         type: Object,
         default() {
           return {}
         }
+      }
+    },
+    methods: {
+      imgLoad() {
+        this.$bus.$emit('itemimgload')
+      },
+      itemClick() {
+        this.$router.push('/detail' +'/' + this.gooditem.iid)
       }
     }
   }
