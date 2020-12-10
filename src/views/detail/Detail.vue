@@ -5,8 +5,10 @@
         <DetailSwiper :topImages="topImages"/>
         <DetailBaseInfo :goods='goods'/>
         <DetailShopInfo :shop='shop'/>
-        <DetailGoodsInfo :detail-info='detailInfo' @imageLoad='imageLoad'/>
+        <DetailGoodsInfo :detail-info='detailInfo'/>
         <DetailParamInfo :param-info='paramInfo'/>
+        <DetailCommentInfo :comment-info='commentInfo'/>
+        <GoodsList :goods='recommends'/>
     </Scroll>
     
   </div>
@@ -20,10 +22,13 @@ import DetailBaseInfo from '@/views/detail/childcomps/DetailBaseInfo'
 import DetailShopInfo from '@/views/detail/childcomps/DetailShopInfo'
 import DetailGoodsInfo from '@/views/detail/childcomps/DetailGoodsInfo'
 import DetailParamInfo from '@/views/detail/childcomps/DetailParamInfo'
+import DetailCommentInfo from '@/views/detail/childcomps/DetailCommentInfo'
 
 import Scroll from '@/components/common/scroll/Scroll'
+import GoodsList from '@/components/content/goods/GoodsList'
 
-import { getDetail, Goods, Shop, GoodsParam } from '@/network/detail' 
+import { itemListenerMixin } from '@/common/mixin'
+import { getDetail, Goods, Shop, GoodsParam, getRecommend } from '@/network/detail' 
 
 
 export default {
@@ -35,9 +40,12 @@ export default {
       goods: {},
       shop: {},
       detailInfo: {},
-      paramInfo: {}
+      paramInfo: {},
+      commentInfo: {},
+      recommends: []
     }
   },
+  mixins: [itemListenerMixin],
   components: {
     DetailNavBar,
     DetailSwiper,
@@ -45,12 +53,15 @@ export default {
     DetailShopInfo,
     DetailGoodsInfo,
     DetailParamInfo,
-    Scroll
+    DetailCommentInfo,
+    Scroll,
+    GoodsList
   },
   created() {
     this.iid = this.$route.params.iid
 
     getDetail(this.iid).then(res => {
+      console.log(res);
       const data = res.result
       this.topImages = data.itemInfo.topImages
 
@@ -61,12 +72,23 @@ export default {
       this.detailInfo = data.detailInfo
 
       this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
+      
+      
+      this.commentInfo = data.rate.list[0]
+    })
+    
+    getRecommend().then(res => {
+      this.recommends = res.data.list
     })
   },
   methods: {
-    imageLoad() {
-      this.$refs.scroll.refresh()
-    }
+   
+  },
+  mounted() {
+    
+  },
+  destroyed() {
+    this.$bus.$off('itemImgLoad', this.itemImgListener)
   }
 
 }
