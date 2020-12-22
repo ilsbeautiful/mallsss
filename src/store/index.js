@@ -8,7 +8,7 @@ import getters from './getters'
 Vue.use(Vuex);
 
 const state = {
-    shoppingCartGoodsInfo: [],
+    carList: [],
 }
 
 const store = new Vuex.Store({

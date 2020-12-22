@@ -33,7 +33,7 @@ import GoodsList from '@/components/content/goods/GoodsList'
 import { itemListenerMixin, backTopMixin } from '@/common/mixin'
 import { debounce } from '@/common/utils'
 import { getDetail, Goods, Shop, GoodsParam, getRecommend } from '@/network/detail' 
-
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Detail',
@@ -98,6 +98,7 @@ export default {
     }, 100)
   },
   methods: {
+    ...mapActions(['addCart']),
     imgLoad() {
       this.$refs.scroll.refresh()
       this.getThemeTopY()
@@ -127,7 +128,9 @@ export default {
       product.price = this.goods.realPrice
       product.iid = this.iid
 
-      this.$store.commit('addCart', product)      
+      this.addCart(product).then(res => {
+        this.$toast.show('加入购物车成功~~');
+      })      
     }
   },
   mounted() {
